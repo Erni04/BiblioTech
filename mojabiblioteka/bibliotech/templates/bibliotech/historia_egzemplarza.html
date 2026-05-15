@@ -1,0 +1,37 @@
+{% extends "bibliotech/base.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-clock-history me-2"></i>Historia Egzemplarza</h2>
+        <a href="{% url 'panel_bibliotekarza' %}" class="btn btn-outline-secondary rounded-pill">Powrót do panelu</a>
+    </div>
+
+    <div class="card shadow-sm border-0 rounded-4 p-4">
+        <h4 class="fw-bold mb-4">{{ egzemplarz.ksiazka.tytul }} <small class="text-muted">#{{ egzemplarz.kod_kreskowy }}</small></h4>
+        
+        <div class="list-group list-group-flush">
+            {% for wpis in wpisy %}
+            <div class="list-group-item py-3 border-start border-4 
+                {% if wpis.akcja == 'W' %}border-danger
+                {% elif wpis.akcja == 'Z' %}border-success
+                {% elif wpis.akcja == 'R' %}border-warning
+                {% else %}border-secondary{% endif %}">
+                
+                <div class="d-flex w-100 justify-content-between">
+                    <h6 class="mb-1 fw-bold">{{ wpis.get_akcja_display }}</h6>
+                    <small class="text-muted">{{ wpis.data|date:"d.m.Y H:i" }}</small>
+                </div>
+                <p class="mb-1">Osoba: <strong>{{ wpis.uzytkownik.username }}</strong> 
+                    <small>({{ wpis.uzytkownik.get_full_name }})</small>
+                </p>
+            </div>
+            {% empty %}
+            <div class="text-center py-5">
+                <p class="text-muted">Brak zarejestrowanych akcji dla tego egzemplarza.</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

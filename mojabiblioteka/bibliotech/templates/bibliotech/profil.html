@@ -1,0 +1,52 @@
+{% extends "bibliotech/base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Moje Rezerwacje</h2>
+        <span class="badge bg-primary fs-6">Zalogowany jako: {{ user.username }}</span>
+    </div>
+
+    {% if rezerwacje %}
+        <div class="table-responsive shadow-sm bg-white p-3 rounded">
+            <table class="table table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>Tytuł Książki</th>
+                        <th>Data Rezerwacji</th>
+                        <th>Ważna do</th>
+                        <th>Status</th>
+                        <th>Akcja</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for r in rezerwacje %}
+                    <tr>
+                        <td><strong>{{ r.egzemplarz.ksiazka.tytul }}</strong></td>
+                        <td>{{ r.data_rezerwacji|date:"d.m.Y H:i" }}</td>
+                        <td>{{ r.data_waznosci|date:"d.m.Y" }}</td>
+                        <td>
+                            {% if r.data_waznosci < teraz %}
+                                <span class="badge bg-danger">Wygasła</span>
+                            {% else %}
+                                <span class="badge bg-success">Aktywna</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <form action="{% url 'anuluj_rezerwacje' r.id %}" method="POST" onsubmit="return confirm('Na pewno chcesz anulować?')">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-sm btn-outline-danger">Anuluj</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="alert alert-info shadow-sm">
+            Nie masz obecnie żadnych aktywnych rezerwacji. <a href="{% url 'lista_ksiazek' %}">Przejdź do katalogu</a>.
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

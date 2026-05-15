@@ -1,0 +1,33 @@
+/* bibliotech/static/bibliotech/css/style.css */
+
+:root {
+    --primary-color: #003366; 
+    --accent-color: #f8f9fa;
+}
+
+body {
+    background-color: #65b4e9 !important;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Stylizacja kart książek */
+.book-card {
+    border-radius: 15px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.book-card:hover {
+    transform: scale(1.03);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
+}
+
+/* Personalizacja przycisków */
+.btn-primary {
+    background-color: var(--primary-color);
+    border: none;
+}
+
+.btn-primary:hover {
+    background-color: #002244;
+}

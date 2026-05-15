@@ -1,0 +1,116 @@
+{% extends "bibliotech/base.html" %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-gear-fill me-2"></i>Zarządzanie Biblioteką</h2>
+        <a href="{% url 'ksiazka_dodaj' %}" class="btn btn-success rounded-pill">
+            <i class="bi bi-plus-circle me-1"></i> Dodaj nową książkę
+        </a>
+    </div>
+
+    <div class="card shadow-sm p-3 mb-4 border-0">
+        <form method="GET" class="row g-2">
+            <div class="col-md-6">
+                <input name="q" class="form-control" placeholder="Szukaj po tytule, kodzie lub czytelniku..." value="{{ query }}">
+            </div>
+            <div class="col-md-4">
+                <select name="gatunek" class="form-select">
+                    <option value="">Wszystkie gatunki</option>
+                    {% for g in gatunki %}
+                        <option value="{{ g.id }}" {% if wybrany_gatunek == g.id|stringformat:"i" %}selected{% endif %}>{{ g.nazwa }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary w-100">Filtruj</button>
+            </div>
+        </form>
+    </div>
+
+    <div class="table-responsive bg-white shadow-sm rounded-4">
+        <table class="table table-hover mb-0 align-middle">
+            <thead class="table-dark">
+                <tr>
+                    <th>Egzemplarz (Kod)</th>
+                    <th>Edytuj książkę</th>
+                    <th>Status</th>
+                    <th>Użytkownik / Termin</th>
+                    <th>Akcje Zarządzania</th>
+                </tr>
+            </thead>
+            <tbody id="egzemplarze-body" 
+       hx-get="{% url 'panel_bibliotekarza' %}" 
+       hx-trigger="every 30s" 
+       hx-swap="innerHTML">
+    
+    {% include 'bibliotech/partials/tabela_egzemplarzy.html' %}
+
+        <!--       {% for egz in egzemplarze %}
+                <tr>
+                    <td>
+                        <strong>{{ egz.ksiazka.tytul }}</strong><br>
+                        <small class="text-muted">Kod: {{ egz.kod_kreskowy }}</small>
+                    </td>
+                    <td>
+                        {% if egz.status == 'D' %}<span class="badge bg-success">Dostępny</span>
+                        {% elif egz.status == 'R' %}<span class="badge bg-warning text-dark">Rezerwacja</span>
+                        {% else %}<span class="badge bg-danger">Wypożyczona</span>{% endif %}
+                    </td>
+                    <td>
+                        {% if egz.aktualny_czytelnik %}
+                            {{ egz.aktualny_czytelnik.username }}<br>
+                            <small class="text-danger">Zwrot: {{ egz.termin_zwrotu }}</small>
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
+                    <td>
+                        <div class="btn-group shadow-sm" role="group">
+                            
+                            {% if egz.status == 'D' or egz.status == 'R' %}
+                                <a href="{% url 'wydaj_ksiazke' egz.id %}" class="btn btn-sm btn-success" title="Wydaj czytelnikowi">
+                                    <i class="bi bi-box-arrow-right"></i> Wydaj
+                                </a>
+                            {% elif egz.status == 'W' %}
+                                <a href="{% url 'zmien_status' egz.id 'D' %}" class="btn btn-sm btn-primary" title="Przyjmij zwrot">
+                                    <i class="bi bi-arrow-return-left"></i> Zwrot
+                                </a>
+                                <a href="{% url 'prosba_o_zwrot' egz.id %}" class="btn btn-sm btn-danger text-white" title="Wyślij ponaglenie do czytelnika">
+                                    <i class="bi bi-megaphone-fill"></i> Pilne!
+                                </a>
+                            {% endif %}
+
+                            <a href="{% url 'historia_egzemplarza' egz.id %}" class="btn btn-sm btn-outline-info" title="Historia wypożyczeń">
+                                <i class="bi bi-clock-history"></i> Logi
+                            </a>
+
+                            <a href="{% url 'ksiazka_edytuj' egz.ksiazka.id %}" class="btn btn-sm btn-outline-dark" title="Edytuj dane książki">
+                                <i class="bi bi-pencil"></i>
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %} -->
+            </tbody>
+        </table>
+
+        {% if ksiazki_bez_egz %}
+        <div class="alert alert-warning border-0 shadow-sm rounded-4 p-4 m-3">
+            <h5 class="fw-bold text-dark"><i class="bi bi-exclamation-triangle-fill me-2"></i>Książki bez egzemplarzy</h5>
+            <p class="small">Poniższe tytuły są w bazie, ale nie mają przypisanych kodów kreskowych (nie można ich wypożyczyć).</p>
+            <div class="list-group">
+                {% for k in ksiazki_bez_egz %}
+                <div class="list-group-item d-flex justify-content-between align-items-center border-0 bg-transparent py-1">
+                    <span>{{ k.tytul }} - <small>{{ k.autor }}</small></span>
+                    <a href="{% url 'egzemplarz_dodaj' %}?ksiazka_id={{ k.id }}" class="btn btn-sm btn-warning rounded-pill px-3 shadow-sm">
+                        + Dodaj pierwszy egzemplarz
+                    </a>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

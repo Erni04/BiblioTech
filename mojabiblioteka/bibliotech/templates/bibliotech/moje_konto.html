@@ -1,0 +1,89 @@
+{% extends "bibliotech/base.html" %}
+
+{% block content %}
+<div class="container py-4">
+    <h2 class="fw-bold mb-4">Witaj, {{ user.first_name|default:user.username }}! 👋</h2>
+
+    <div class="row g-4">
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm rounded-4 h-100">
+                <div class="card-header bg-white border-0 pt-4 px-4">
+                    <h5 class="fw-bold"><i class="bi bi-book me-2 text-success"></i>Aktualnie wypożyczone</h5>
+                </div>
+                <div class="card-body px-4">
+                    {% for w in wypozyczone %}
+                        <div class="d-flex justify-content-between align-items-center mb-3 p-3 bg-light rounded-3">
+                            <div>
+                                <h6 class="mb-0 fw-bold">{{ w.ksiazka.tytul }}</h6>
+                                <small class="text-muted">Termin zwrotu: 
+                                    <span class="{% if w.termin_zwrotu < dzisiaj %}text-danger fw-bold{% endif %}">
+                                        {{ w.termin_zwrotu|date:"d.m.Y" }}
+                                    </span>
+                                </small>
+                            </div>
+                            <i class="bi bi-journal-check text-success fs-4"></i>
+                        </div>
+                    {% empty %}
+                        <p class="text-muted italic">Nie masz obecnie żadnych wypożyczonych książek.</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm rounded-4 h-100">
+                <div class="card-header bg-white border-0 pt-4 px-4">
+                    <h5 class="fw-bold"><i class="bi bi-calendar-event me-2 text-primary"></i>Twoje rezerwacje</h5>
+                </div>
+                <div class="card-body px-4">
+                    {% for r in rezerwacje %}
+                        <div class="d-flex justify-content-between align-items-center mb-3 p-3 bg-light rounded-3">
+                            <div>
+                                <h6 class="mb-0 fw-bold">{{ r.egzemplarz.ksiazka.tytul }}</h6>
+                                <small class="text-muted">Wygasa: {{ r.data_waznosci|date:"d.m.Y" }}</small>
+                            </div>
+                            <span class="badge bg-primary rounded-pill">Aktywna</span>
+                        </div>
+                    {% empty %}
+                        <p class="text-muted italic">Brak aktywnych rezerwacji.</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12">
+            <div class="card border-0 shadow-sm rounded-4">
+                <div class="card-header bg-white border-0 pt-4 px-4">
+                    <h5 class="fw-bold"><i class="bi bi-clock-history me-2 text-secondary"></i>Ostatnia aktywność</h5>
+                </div>
+                <div class="card-body px-4">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Data</th>
+                                    <th>Książka</th>
+                                    <th>Akcja</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for h in historia %}
+                                <tr>
+                                    <td>{{ h.data|date:"d.m.Y" }}</td>
+                                    <td>{{ h.egzemplarz.ksiazka.tytul }}</td>
+                                    <td>
+                                        <span class="badge {% if h.akcja == 'W' %}bg-danger{% else %}bg-success{% endif %}">
+                                            {{ h.get_akcja_display }}
+                                        </span>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

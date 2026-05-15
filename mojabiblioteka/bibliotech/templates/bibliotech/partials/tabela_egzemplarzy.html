@@ -1,0 +1,60 @@
+{% for egz in egzemplarze %}
+<tr>
+    <td>
+        <strong>{{ egz.ksiazka.tytul }}</strong><br>
+        <small class="text-muted">Kod: {{ egz.kod_kreskowy }}</small>
+    </td>
+    <td>
+        <a href="{% url 'edytuj_ksiazke' egz.ksiazka.pk %}" 
+       class="btn btn-link btn-sm text-warning p-0 ms-2" 
+       title="Edytuj dane książki">
+        <i class="bi bi-pencil-square"></i>
+    </a>
+
+    </td>
+    <td>
+        {% if egz.status == 'D' %}<span class="badge bg-success">Dostępny</span>
+        {% elif egz.status == 'R' %}<span class="badge bg-warning text-dark">Rezerwacja</span>
+        {% else %}<span class="badge bg-danger">Wypożyczona</span>{% endif %}
+    </td>
+    <td>
+        {% if egz.status == 'W' %}
+            <i class="bi bi-person-fill text-primary"></i> {{ egz.aktualny_czytelnik.username }}<br>
+            <small class="text-danger">Zwrot: {{ egz.termin_zwrotu|date:"d.m.Y" }}</small>
+            
+        {% elif egz.status == 'R' %}
+            {% with rez=egz.rezerwacja_set.first %}
+                {% if rez %}
+                    <i class="bi bi-bookmark-star-fill text-warning"></i> {{ rez.uzytkownik.username }}<br>
+                    <small class="text-muted">Czeka do: {{ rez.data_waznosci|date:"d.m.Y" }}</small>
+                {% else %}
+                    <span class="text-muted small italic">Błąd danych rezerwacji</span>
+                {% endif %}
+            {% endwith %}
+            
+        {% else %}
+            <span class="text-muted">-</span>
+        {% endif %}
+    </td>
+    <td>
+        <div class="btn-group shadow-sm" role="group">
+            {% if egz.status == 'D' or egz.status == 'R' %}
+                <a href="{% url 'wydaj_ksiazke' egz.id %}" class="btn btn-sm btn-success">
+                    <i class="bi bi-box-arrow-right"></i> Wydaj
+                </a>
+            {% elif egz.status == 'W' %}
+                <a href="{% url 'zmien_status' egz.id 'D' %}" class="btn btn-sm btn-primary">
+                    <i class="bi bi-arrow-return-left"></i> Zwrot
+                </a>
+                <a href="{% url 'prosba_o_zwrot' egz.id %}" class="btn btn-sm btn-danger text-white">
+                    <i class="bi bi-megaphone-fill"></i> Pilne!
+                </a>
+            {% endif %}
+            
+            <a href="{% url 'historia_egzemplarza' egz.id %}" class="btn btn-sm btn-outline-info">
+                <i class="bi bi-clock-history"></i> Logi
+            </a>
+        </div>
+    </td>
+</tr>
+{% endfor %}

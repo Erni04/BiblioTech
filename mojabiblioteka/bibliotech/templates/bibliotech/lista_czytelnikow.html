@@ -1,0 +1,43 @@
+{% extends "bibliotech/base.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-people-fill me-2 text-primary"></i>Baza Czytelników</h2>
+        <form method="GET" class="d-flex w-50 shadow-sm">
+            <input name="q" class="form-control rounded-start-pill" placeholder="Szukaj po nazwisku, loginie lub e-mailu..." value="{{ query }}">
+            <button class="btn btn-primary rounded-end-pill px-4" type="submit">Szukaj</button>
+        </form>
+    </div>
+
+    <div class="card shadow-sm border-0 rounded-4 overflow-hidden">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-dark">
+                <tr>
+                    <th>Imię i Nazwisko</th>
+                    <th>Login / Email</th>
+                    <th>Data dołączenia</th>
+                    <th class="text-end">Akcja</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for c in czytelnicy %}
+                <tr>
+                    <td><strong>{{ c.last_name }} {{ c.first_name }}</strong></td>
+                    <td>
+                        <span class="text-muted small">{{ c.username }}</span><br>
+                        <small>{{ c.email }}</small>
+                    </td>
+                    <td>{{ c.date_joined|date:"d.m.Y" }}</td>
+                    <td class="text-end">
+                        <a href="{% url 'detale_czytelnika' c.id %}" class="btn btn-sm btn-outline-primary rounded-pill px-4 shadow-sm">
+                            <i class="bi bi-eye me-1"></i> Zobacz profil
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,29 @@
+{% extends "bibliotech/base.html" %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow-lg border-0 rounded-4">
+            <div class="card-body p-5">
+                <h2 class="fw-bold mb-4 text-dark"><i class="bi bi-barcode me-2 text-success"></i>Dodaj fizyczną sztukę</h2>
+                <form method="POST">
+                    {% csrf_token %}
+                    {% for field in form %}
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold text-secondary small text-uppercase">{{ field.label }}</label>
+                            {{ field }}
+                        </div>
+                    {% endfor %}
+                    <div class="d-grid mt-4">
+                        <button type="submit" class="btn btn-primary btn-lg rounded-pill shadow">Zatwierdź i dodaj do stanu</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.querySelectorAll('input, select').forEach(el => el.classList.add('form-control'));
+</script>
+{% endblock %}

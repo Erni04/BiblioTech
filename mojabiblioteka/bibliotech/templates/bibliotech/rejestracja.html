@@ -1,0 +1,65 @@
+{% extends "bibliotech/base.html" %}
+
+{% block content %}
+<div class="d-flex align-items-center justify-content-center py-5">
+    <div class="row g-0 shadow-lg rounded-4 overflow-hidden bg-white" style="width: 1000px; max-width: 100%; min-height: 600px;">
+        
+        <div class="col-md-6 d-none d-md-flex bg-primary text-white flex-column justify-content-center p-5">
+            <div class="text-center mb-4">
+                <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" fill="currentColor" class="bi bi-book-half mb-4 opactiy-75" viewBox="0 0 16 16">
+                    <path d="M8.5 2.687c.654-.689 1.782-.886 3.112-.752 1.234.124 2.503.523 3.388.893v9.923c-.918-.35-2.107-.692-3.287-.81-1.094-.111-2.278-.039-3.213.492V2.687zM8 1.783C7.015.936 5.587.81 4.287.94c-1.514.153-3.042.672-3.994 1.105A.5.5 0 0 0 0 2.5v10.49c0 .241.176.45.42.503 1.21.268 2.59.511 3.824.511 1.204 0 2.466-.251 3.69-.511l.217-.046a.5.5 0 0 1 .539.495.5.5 0 0 1-.396.493z"/>
+                </svg>
+            </div>
+            <h1 class="display-5 fw-bold mb-3 text-center">Dołącz do BiblioTech</h1>
+            <p class="lead text-center opacity-75">Twoja brama do świata wiedzy i historii. Zarejestruj się, aby móc rezerwować ulubione pozycje online.</p>
+            <div class="mt-5 text-center">
+                <p class="mb-1">Masz już konto?</p>
+                <a href="{% url 'login' %}" class="btn btn-outline-light rounded-pill px-4">Zaloguj się</a>
+            </div>
+        </div>
+
+        <div class="col-md-6 p-5 d-flex flex-column justify-content-center">
+            <h2 class="fw-bold mb-2 text-center text-md-start">Stwórz Nowe Konto</h2>
+            <p class="text-muted mb-4 text-center text-md-start">Wypełnij poniższe dane, aby rozpocząć.</p>
+
+            {% if form.errors %}
+                <div class="alert alert-danger mb-4 rounded-3 small">
+                    <ul class="mb-0">
+                        {% for field in form %}
+                            {% for error in field.errors %}
+                                <li><strong>{{ field.label }}:</strong> {{ error }}</li>
+                            {% endfor %}
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+
+            <form method="post">
+                {% csrf_token %}
+                
+                {% for field in form %}
+                    <div class="mb-3">
+                        <label for="{{ field.id_for_label }}" class="form-label fw-medium text-secondary">{{ field.label }}</label>
+                        <div class="input-group">
+                            <input type="{{ field.field.widget.input_type }}" 
+                                   name="{{ field.name }}" 
+                                   id="{{ field.id_for_label }}" 
+                                   class="form-control form-control-lg rounded-3 {% if field.errors %}is-invalid{% endif %}" 
+                                   placeholder="Wprowadź {{ field.label|lower }}">
+                        </div>
+                        {% if field.help_text %}
+                            <div class="form-text text-muted small">{{ field.help_text|safe }}</div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+
+                <button type="submit" class="btn btn-primary btn-lg w-100 rounded-pill shadow-sm mt-4">Zarejestruj się</button>
+            </form>
+
+            <div class="d-md-none text-center mt-4">
+                <p class="text-muted">Masz już konto? <a href="{% url 'login' %}" class="fw-bold">Zaloguj się</a></p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

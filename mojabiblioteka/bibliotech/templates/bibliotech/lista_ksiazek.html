@@ -1,0 +1,113 @@
+{% extends "bibliotech/base.html" %}
+
+{% block content %}
+<div class="row mb-5 align-items-center">
+    <div class="col-md-6">
+        <h1 class="fw-bold text-dark mb-1">📚 Katalog Biblioteki</h1>
+        <p class="text-muted">Odkryj historie czekające na Ciebie.</p>
+    </div>
+    <div class="col-md-6">
+<form method="GET" action="{% url 'lista_ksiazek' %}" class="row g-2 shadow-sm p-3 bg-white rounded-pill">
+    <!-- Wybór kategorii -->
+    <div class="col-md-3">
+        <select name="gatunek" class="form-select border-0 border-end">
+            <option value="">Wszystkie kategorie</option>
+            {% for g in gatunki %}
+                <option value="{{ g.id }}" {% if wybrany_gatunek == g.id|slugify %}selected{% endif %}>
+                    {{ g.nazwa }}
+                </option>
+            {% endfor %}
+        </select>
+    </div>
+    
+    <!-- Pole tekstowe -->
+    <div class="col-md-7">
+        <div class="input-group">
+            <span class="input-group-text bg-white border-0">
+                <i class="bi bi-search text-muted"></i>
+            </span>
+            <input name="q" class="form-control border-0" 
+                   type="search" placeholder="Tytuł, autor..." value="{{ query|default:'' }}">
+        </div>
+    </div>
+
+    <!-- Przycisk -->
+    <div class="col-md-2">
+        <button class="btn btn-primary w-100 rounded-pill px-4" type="submit">Szukaj</button>
+    </div>
+</form>
+    </div>
+</div>
+
+<div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 row-cols-xl-4 g-4">
+    {% for ksiazka in ksiazki %}
+    <div class="col">
+        <div class="card h-100 border-0 shadow-sm book-card position-relative">
+            
+            <div class="position-relative overflow-hidden">
+    {% if ksiazka.okladka %}
+        <img src="{{ ksiazka.okladka.url }}" class="card-img-top" 
+             style="height: 350px; object-fit: cover;" alt="{{ ksiazka.tytul }}">
+    {% else %}
+        <img src="https://placehold.co/400x600/e9ecef/495057?text={{ ksiazka.tytul|urlencode }}" 
+             class="card-img-top" 
+             style="height: 350px; object-fit: cover;" 
+             alt="Brak okładki">
+        
+        <div class="position-absolute top-50 start-50 translate-middle opacity-25">
+            <i class="bi bi-book-half display-1 text-dark"></i>
+        </div>
+    {% endif %}
+    
+    <span class="badge bg-primary position-absolute top-0 end-0 m-3 shadow-sm">
+        {{ ksiazka.gatunek.nazwa }}
+    </span>
+</div>
+
+            <div class="card-body d-flex flex-column p-4">
+                <h5 class="card-title fw-bold mb-1 text-dark">
+                    {{ ksiazka.tytul }}
+                </h5>
+                <p class="text-primary small fw-semibold mb-3">{{ ksiazka.autor.imie_nazwisko }}</p>
+                
+                <p class="card-text text-muted small flex-grow-1">
+                    {{ ksiazka.opis|truncatewords:15 }}
+                </p>
+
+                <div class="mt-3">
+                    <a href="{% url 'ksiazka_detale' ksiazka.pk %}" class="btn btn-outline-primary w-100 rounded-pill stretched-link">
+                        Zobacz szczegóły
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12 text-center py-5">
+        <i class="bi bi-journal-x display-1 text-muted"></i>
+        <h3 class="mt-3">Nie znaleźliśmy takiej książki</h3>
+        <p class="text-muted">Spróbuj wpisać inną frazę lub wyczyść filtry.</p>
+        <a href="{% url 'lista_ksiazek' %}" class="btn btn-outline-primary rounded-pill">Pokaż wszystkie</a>
+    </div>
+    {% endfor %}
+</div>
+
+<style>
+    /* Sprawiamy, że karta wygląda na klikalną (kursor rączka) */
+    .book-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        cursor: pointer;
+    }
+    
+    .book-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 1rem 3rem rgba(0,0,0,.15)!important;
+    }
+
+    /* Zmiana koloru przycisku po najechaniu na CAŁĄ kartę */
+    .book-card:hover .btn-outline-primary {
+        background-color: var(--bs-primary);
+        color: white;
+    }
+</style>
+{% endblock %}
