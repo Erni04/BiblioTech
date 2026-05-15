@@ -42,7 +42,8 @@ python manage.py createsuperuser
 5. Generowanie danych testowych (Seed)
 
 Aby nie musieć wpisywać wszystkiego ręcznie, wypełnij bazę przykładowymi książkami i autorami:
-
+-generowane są również konta czytelników z hasłem - haslo123
+-dodatkowo generowane są wypożyczenia książek, dla pokazania pracy biblioteki
 
 python manage.py seed_data
 
